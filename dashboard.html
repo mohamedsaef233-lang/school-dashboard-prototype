@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم - النظام المدرسي</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="dashboard.html">
+                <i class="bi bi-mortarboard-fill"></i>
+                النظام المدرسي
+            </a>
+            
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="dashboard.html">
+                    <i class="bi bi-speedometer2"></i>
+                    لوحة التحكم
+                </a>
+                <a class="nav-link" href="#" onclick="logout()">
+                    <i class="bi bi-box-arrow-left"></i>
+                    تسجيل الخروج
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <!-- البطاقات الإحصائية -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card stat-card text-white bg-primary">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h5 class="card-title">الطلاب</h5>
+                                <h2 class="mb-0" id="studentsCount">0</h2>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="bi bi-people-fill display-6"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card text-white bg-success">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h5 class="card-title">المعلمين</h5>
+                                <h2 class="mb-0" id="teachersCount">0</h2>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="bi bi-person-badge-fill display-6"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card text-white bg-warning">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h5 class="card-title">الصفوف</h5>
+                                <h2 class="mb-0">12</h2>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="bi bi-house-door-fill display-6"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card text-white bg-info">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h5 class="card-title">آخر تحديث</h5>
+                                <p class="mb-0" id="lastUpdate">-</p>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="bi bi-clock-fill display-6"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- قسم استخراج البيانات -->
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-download"></i>
+                            استخراج البيانات من النظام المدرسي
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">بيانات الدخول للنظام المدرسي</label>
+                            <div class="input-group mb-2">
+                                <span class="input-group-text bg-light">
+                                    <i class="bi bi-person text-primary"></i>
+                                </span>
+                                <input type="text" id="schoolUsername" class="form-control" 
+                                       placeholder="اسم المستخدم في النظام المدرسي">
+                            </div>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text bg-light">
+                                    <i class="bi bi-lock text-primary"></i>
+                                </span>
+                                <input type="password" id="schoolPassword" class="form-control" 
+                                       placeholder="كلمة المرور في النظام المدرسي">
+                            </div>
+                            <button onclick="loginToSchool()" class="btn btn-outline-primary w-100">
+                                <i class="bi bi-box-arrow-in-right"></i>
+                                تسجيل الدخول إلى النظام المدرسي
+                            </button>
+                        </div>
+                        
+                        <hr>
+                        
+                        <div class="d-grid gap-2">
+                            <button onclick="extractData('students')" class="btn btn-info btn-lg">
+                                <i class="bi bi-download"></i>
+                                استخراج بيانات الطلاب
+                            </button>
+                            <button onclick="extractData('teachers')" class="btn btn-warning btn-lg">
+                                <i class="bi bi-download"></i>
+                                استخراج بيانات المعلمين
+                            </button>
+                            <button onclick="exportToExcel()" class="btn btn-success btn-lg">
+                                <i class="bi bi-file-earmark-excel"></i>
+                                تصدير البيانات إلى Excel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <!-- سجل العمليات -->
+                <div class="card">
+                    <div class="card-header bg-dark text-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-list-check"></i>
+                            سجل العمليات
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="logsContainer" style="max-height: 400px; overflow-y: auto;">
+                            <div class="text-center text-muted py-4">
+                                <i class="bi bi-hourglass-split display-4"></i>
+                                <p>جاري تحميل سجل العمليات...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- معاينة البيانات -->
+                <div class="card mt-4">
+                    <div class="card-header bg-secondary text-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-eye"></i>
+                            معاينة البيانات
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="btn-group w-100" role="group">
+                            <button type="button" class="btn btn-outline-primary" onclick="showStudentsPreview()">
+                                عرض الطلاب
+                            </button>
+                            <button type="button" class="btn btn-outline-success" onclick="showTeachersPreview()">
+                                عرض المعلمين
+                            </button>
+                        </div>
+                        <div id="dataPreview" class="mt-3">
+                            <p class="text-muted text-center">اختر نوع البيانات للمعاينة</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- نموذج معاينة البيانات -->
+    <div class="modal fade" id="dataModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">معاينة البيانات</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped" id="dataTable">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>الاسم</th>
+                                    <th>الصف</th>
+                                    <th>التفاصيل</th>
+                                </tr>
+                            </thead>
+                            <tbody id="modalTableBody">
+                                <!-- سيتم تعبئته بالبيانات -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+        // بيانات وهمية للعرض
+        const mockData = {
+            students: [
+                { id: 1, name: 'أحمد محمد', grade: 'الصف العاشر - أ', details: 'تاريخ الميلاد: 2007-05-15' },
+                { id: 2, name: 'فاطمة خالد', grade: 'الصف العاشر - ب', details: 'تاريخ الميلاد: 2007-08-22' },
+                { id: 3, name: 'محمد علي', grade: 'الصف الحادي عشر - أ', details: 'تاريخ الميلاد: 2006-03-10' },
+                { id: 4, name: 'سارة أحمد', grade: 'الصف التاسع - ج', details: 'تاريخ الميلاد: 2008-11-05' }
+            ],
+            teachers: [
+                { id: 1, name: 'محمد أحمد', grade: 'مدرس رياضيات', details: 'هاتف: 0781112233' },
+                { id: 2, name: 'سارة عبدالله', grade: 'مدرسة لغة عربية', details: 'هاتف: 0784445566' },
+                { id: 3, name: 'خالد حسن', grade: 'مدرس علوم', details: 'هاتف: 0798889990' }
+            ],
+            logs: [
+                { type: 'students', count: 4, status: 'success', time: '2024-01-15 10:30:00' },
+                { type: 'teachers', count: 3, status: 'success', time: '2024-01-15 10:25:00' },
+                { type: 'login', count: 1, status: 'success', time: '2024-01-15 10:20:00' }
+            ]
+        };
+
+        // تحميل البيانات عند فتح الصفحة
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!localStorage.getItem('loggedIn')) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            updateDashboard();
+            loadLogs();
+        });
+
+        function updateDashboard() {
+            document.getElementById('studentsCount').textContent = mockData.students.length;
+            document.getElementById('teachersCount').textContent = mockData.teachers.length;
+            document.getElementById('lastUpdate').textContent = new Date().toLocaleString('ar-EG');
+        }
+
+        function loadLogs() {
+            const logsContainer = document.getElementById('logsContainer');
+            let logsHTML = '';
+
+            mockData.logs.forEach(log => {
+                const typeText = log.type === 'students' ? 'الطلاب' : 
+                               log.type === 'teachers' ? 'المعلمين' : 'تسجيل الدخول';
+                const badgeClass = log.status === 'success' ? 'bg-success' : 'bg-danger';
+                
+                logsHTML += `
+                    <div class="border-bottom pb-2 mb-2">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <span class="badge ${badgeClass}">${typeText}</span>
+                            <small class="text-muted">${log.time}</small>
+                        </div>
+                        <div class="mt-1">
+                            <span>${log.count} سجل</span>
+                            <span class="badge bg-light text-dark ms-2">${log.status === 'success' ? 'ناجح' : 'فاشل'}</span>
+                        </div>
+                    </div>
+                `;
+            });
+
+            logsContainer.innerHTML = logsHTML;
+        }
+
+        function loginToSchool() {
+            const username = document.getElementById('schoolUsername').value;
+            const password = document.getElementById('schoolPassword').value;
+            
+            if (!username || !password) {
+                showAlert('يرجى إدخال اسم المستخدم وكلمة المرور', 'warning');
+                return;
+            }
+            
+            showAlert('جاري الاتصال بالنظام المدرسي...', 'info');
+            
+            // محاكاة عملية الاتصال
+            setTimeout(() => {
+                showAlert('تم تسجيل الدخول إلى النظام المدرسي بنجاح', 'success');
+                addLog('login', 1, 'success');
+            }, 2000);
+        }
+
+        function extractData(type) {
+            const typeText = type === 'students' ? 'الطلاب' : 'المعلمين';
+            showAlert(`جاري استخراج بيانات ${typeText}...`, 'info');
+            
+            // محاكاة عملية الاستخراج
+            setTimeout(() => {
+                const count = type === 'students' ? mockData.students.length : mockData.teachers.length;
+                showAlert(`تم استخراج ${count} ${typeText} بنجاح`, 'success');
+                addLog(type, count, 'success');
+                updateDashboard();
+            }, 3000);
+        }
+
+        function exportToExcel() {
+            showAlert('جاري تصدير البيانات إلى ملف Excel...', 'info');
+            
+            // محاكاة عملية التصدير
+            setTimeout(() => {
+                showAlert('تم تصدير البيانات بنجاح', 'success');
+                addLog('export', mockData.students.length + mockData.teachers.length, 'success');
+            }, 2000);
+        }
+
+        function showStudentsPreview() {
+            showDataPreview('الطلاب', mockData.students);
+        }
+
+        function showTeachersPreview() {
+            showDataPreview('المعلمين', mockData.teachers);
+        }
+
+        function showDataPreview(title, data) {
+            document.getElementById('modalTitle').textContent = `معاينة بيانات ${title}`;
+            const tableBody = document.getElementById('modalTableBody');
+            
+            let tableHTML = '';
+            data.forEach(item => {
+                tableHTML += `
+                    <tr>
+                        <td>${item.id}</td>
+                        <td>${item.name}</td>
+                        <td>${item.grade}</td>
+                        <td>${item.details}</td>
+                    </tr>
+                `;
+            });
+            
+            tableBody.innerHTML = tableHTML;
+            new bootstrap.Modal(document.getElementById('dataModal')).show();
+        }
+
+        function addLog(type, count, status) {
+            const newLog = {
+                type: type,
+                count: count,
+                status: status,
+                time: new Date().toLocaleString('ar-EG')
+            };
+            
+            mockData.logs.unshift(newLog);
+            loadLogs();
+        }
+
+        function showAlert(message, type) {
+            const alertClass = {
+                'success': 'alert-success',
+                'warning': 'alert-warning',
+                'info': 'alert-info',
+                'danger': 'alert-danger'
+            }[type] || 'alert-info';
+
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert ${alertClass} alert-dismissible fade show position-fixed`;
+            alertDiv.style.cssText = 'top: 20px; left: 20px; right: 20px; z-index: 9999;';
+            alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            document.body.appendChild(alertDiv);
+            
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 5000);
+        }
+
+        function logout() {
+            if (confirm('هل تريد تسجيل الخروج؟')) {
+                localStorage.removeItem('loggedIn');
+                window.location.href = 'login.html';
+            }
+        }
+    </script>
+</body>
+</html>
